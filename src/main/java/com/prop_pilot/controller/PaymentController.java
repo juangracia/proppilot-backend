@@ -32,6 +32,22 @@ public class PaymentController {
         @ApiResponse(responseCode = "201", description = "Payment created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid payment data")
     })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Payment data",
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            mediaType = "application/json",
+            examples = {
+                @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    name = "Rent Payment",
+                    value = "{\"propertyUnit\": {\"id\": 1}, \"amount\": 1850.00, \"paymentDate\": \"2024-07-01\", \"paymentType\": \"RENT\", \"description\": \"July 2024 rent payment\", \"status\": \"PAID\"}"
+                ),
+                @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    name = "Deposit Payment",
+                    value = "{\"propertyUnit\": {\"id\": 2}, \"amount\": 3000.00, \"paymentDate\": \"2024-07-01\", \"paymentType\": \"DEPOSIT\", \"description\": \"Security deposit\", \"status\": \"PAID\"}"
+                )
+            }
+        )
+    )
     public ResponseEntity<Payment> createPayment(@Valid @RequestBody Payment payment) {
         Payment createdPayment = paymentService.createPayment(payment);
         return new ResponseEntity<>(createdPayment, HttpStatus.CREATED);
