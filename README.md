@@ -1,6 +1,140 @@
-# proppilot-backend
+# PropPilot Backend
 
-PropPilot Backend - Spring Boot API for property management system
+Spring Boot API for the PropPilot property management system.
+
+## Overview
+
+This is the backend service for PropPilot, providing REST APIs for property management, tenant management, and payment processing.
+
+## Tech Stack
+
+- **Java 17+**
+- **Spring Boot 3.x**
+- **PostgreSQL** - Primary database
+- **Maven** - Build tool
+- **Docker** - Database containerization
+
+## Prerequisites
+
+- Java 17 or higher
+- Maven 3.6+
+- Docker and Docker Compose
+- Git
+
+## Quick Start
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://gitlab.com/juan.gracia2/proppilot-backend.git
+   cd proppilot-backend
+   ```
+
+2. **Start the backend and database:**
+   ```bash
+   ./start-backend.sh
+   ```
+
+3. **Populate the database with sample data (optional):**
+   ```bash
+   ./populate_database.sh
+   ```
+
+## Manual Setup
+
+### Database Setup
+
+1. Start PostgreSQL using Docker:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. The database will be available at:
+   - **Host:** localhost
+   - **Port:** 5432
+   - **Database:** proppilot
+   - **Username:** proppilot
+   - **Password:** proppilot123
+
+### Backend Setup
+
+1. Build and run the Spring Boot application:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+2. The API will be available at: http://localhost:8080
+
+## API Endpoints
+
+The backend provides REST APIs for:
+
+- **Properties** - CRUD operations for property management
+- **Tenants** - Tenant information and management
+- **Payments** - Payment processing and history
+- **Health Check** - Available at `/actuator/health`
+
+## Development
+
+### Project Structure
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/proppilot/
+│   │       ├── controller/     # REST controllers
+│   │       ├── service/        # Business logic
+│   │       ├── repository/     # Data access layer
+│   │       ├── model/          # Entity models
+│   │       └── config/         # Configuration classes
+│   └── resources/
+│       ├── application.yml     # Application configuration
+│       └── data.sql           # Initial data (if any)
+└── test/                      # Unit and integration tests
+```
+
+### Useful Commands
+
+- **Start backend:** `./start-backend.sh`
+- **Stop backend:** `./stop-backend.sh`
+- **View logs:** `tail -f backend.log`
+- **Run tests:** `mvn test`
+- **Build JAR:** `mvn clean package`
+
+## Database Management
+
+- **Populate with sample data:** `./populate_database.sh`
+- **Create sample data:** `./create_sample_data.sh`
+- **Connect via DBeaver:** Use connection details above
+
+## Frontend Integration
+
+This backend is designed to work with the PropPilot frontend application:
+- **Frontend Repository:** https://gitlab.com/juan.gracia2/proppilot-frontend
+- **API Base URL:** http://localhost:8080
+
+## Troubleshooting
+
+1. **Port 8080 already in use:**
+   ```bash
+   lsof -ti:8080 | xargs kill -9
+   ```
+
+2. **Database connection issues:**
+   - Ensure PostgreSQL container is running: `docker ps`
+   - Check logs: `docker-compose logs postgres`
+
+3. **View application logs:**
+   ```bash
+   tail -f backend.log
+   ```
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests: `mvn test`
+4. Submit a merge request
 
 ## Getting started
 
