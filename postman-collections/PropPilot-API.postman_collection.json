@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "PropPilot API",
+		"description": "Complete API collection for PropPilot - Property Management System with real sample data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Property Units",
+			"item": [
+				{
+					"name": "Create Property Unit",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"555 New Development St, Apt 4C\",\n  \"type\": \"Apartment\",\n  \"baseRentAmount\": 1900.00,\n  \"leaseStartDate\": \"2024-03-01\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/property-units", "host": ["{{baseUrl}}"], "path": ["api", "property-units"]}
+					}
+				},
+				{
+					"name": "Get All Property Units",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/property-units", "host": ["{{baseUrl}}"], "path": ["api", "property-units"]}
+					}
+				},
+				{
+					"name": "Get Property Unit by ID",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/property-units/1", "host": ["{{baseUrl}}"], "path": ["api", "property-units", "1"]}
+					}
+				},
+				{
+					"name": "Search Property Units",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/property-units/search?address=Oak",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "property-units", "search"],
+							"query": [{"key": "address", "value": "Oak"}]
+						}
+					}
+				},
+				{
+					"name": "Update Property Unit",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"123 Oak Street, Apt 2A - Updated\",\n  \"type\": \"Apartment\",\n  \"baseRentAmount\": 1950.00,\n  \"leaseStartDate\": \"2023-08-01\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/property-units/1", "host": ["{{baseUrl}}"], "path": ["api", "property-units", "1"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Create Payment",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyUnit\": {\"id\": 1},\n  \"amount\": 1850.00,\n  \"paymentDate\": \"2024-07-01\",\n  \"paymentType\": \"RENT\",\n  \"description\": \"July 2024 rent payment\",\n  \"status\": \"PAID\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api", "payments"]}
+					}
+				},
+				{
+					"name": "Get All Payments",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api", "payments"]}
+					}
+				},
+				{
+					"name": "Get Payments by Property Unit",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/payments/property-unit/1", "host": ["{{baseUrl}}"], "path": ["api", "payments", "property-unit", "1"]}
+					}
+				},
+				{
+					"name": "Calculate Adjusted Rent",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/1/adjusted-rent?effectiveDate=2024-07-21",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "1", "adjusted-rent"],
+							"query": [{"key": "effectiveDate", "value": "2024-07-21"}]
+						}
+					}
+				},
+				{
+					"name": "Calculate Outstanding Amount",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/1/outstanding-amount?asOfDate=2024-07-21",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "1", "outstanding-amount"],
+							"query": [{"key": "asOfDate", "value": "2024-07-21"}]
+						}
+					}
+				},
+				{
+					"name": "Get Payment History",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/1/history?startDate=2023-08-01&endDate=2024-01-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "1", "history"],
+							"query": [
+								{"key": "startDate", "value": "2023-08-01"},
+								{"key": "endDate", "value": "2024-01-31"}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

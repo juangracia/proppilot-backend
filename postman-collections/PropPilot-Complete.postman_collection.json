@@ -1,0 +1,487 @@
+{
+	"info": {
+		"name": "PropPilot API - Complete Test Suite",
+		"description": "Comprehensive test collection with real data, error scenarios, and automated tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🏠 Property Units - CRUD",
+			"item": [
+				{
+					"name": "✅ Create New Apartment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has property unit data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('address');",
+									"    pm.expect(jsonData.address).to.eql('555 New Development St, Apt 4C');",
+									"});",
+									"",
+									"// Save the created ID for other tests",
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('newPropertyUnitId', jsonData.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"555 New Development St, Apt 4C\",\n  \"type\": \"Apartment\",\n  \"baseRentAmount\": 1900.00,\n  \"leaseStartDate\": \"2024-03-01\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/property-units", "host": ["{{baseUrl}}"], "path": ["api", "property-units"]}
+					}
+				},
+				{
+					"name": "✅ Get All Property Units",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Each property unit has required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    jsonData.forEach(unit => {",
+									"        pm.expect(unit).to.have.property('id');",
+									"        pm.expect(unit).to.have.property('address');",
+									"        pm.expect(unit).to.have.property('type');",
+									"        pm.expect(unit).to.have.property('baseRentAmount');",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/property-units", "host": ["{{baseUrl}}"], "path": ["api", "property-units"]}
+					}
+				},
+				{
+					"name": "✅ Get Property Unit by ID (Oak Street)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns correct property unit', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(1);",
+									"    pm.expect(jsonData.address).to.include('Oak Street');",
+									"    pm.expect(jsonData.baseRentAmount).to.eql(1850.00);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/property-units/{{propertyUnitId}}", "host": ["{{baseUrl}}"], "path": ["api", "property-units", "{{propertyUnitId}}"]}
+					}
+				},
+				{
+					"name": "❌ Get Non-existent Property Unit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/property-units/999", "host": ["{{baseUrl}}"], "path": ["api", "property-units", "999"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "💰 Payments - CRUD & Calculations",
+			"item": [
+				{
+					"name": "✅ Create Rent Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Payment created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.amount).to.eql(1850.00);",
+									"    pm.expect(jsonData.paymentType).to.eql('RENT');",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('newPaymentId', jsonData.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyUnit\": {\"id\": {{propertyUnitId}}},\n  \"amount\": {{sampleRentAmount}},\n  \"paymentDate\": \"{{currentDate}}\",\n  \"paymentType\": \"RENT\",\n  \"description\": \"July 2024 rent payment\",\n  \"status\": \"PAID\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api", "payments"]}
+					}
+				},
+				{
+					"name": "✅ Get Payments for Property Unit 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns payment array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Payments have required fields', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        jsonData.forEach(payment => {",
+									"            pm.expect(payment).to.have.property('id');",
+									"            pm.expect(payment).to.have.property('amount');",
+									"            pm.expect(payment).to.have.property('paymentType');",
+									"            pm.expect(payment).to.have.property('status');",
+									"        });",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {"raw": "{{baseUrl}}/api/payments/property-unit/{{propertyUnitId}}", "host": ["{{baseUrl}}"], "path": ["api", "payments", "property-unit", "{{propertyUnitId}}"]}
+					}
+				},
+				{
+					"name": "✅ Calculate Adjusted Rent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns numeric value', function () {",
+									"    const response = pm.response.text();",
+									"    pm.expect(parseFloat(response)).to.be.a('number');",
+									"    pm.expect(parseFloat(response)).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Adjusted rent is higher than base rent', function () {",
+									"    const adjustedRent = parseFloat(pm.response.text());",
+									"    const baseRent = parseFloat(pm.environment.get('sampleRentAmount'));",
+									"    pm.expect(adjustedRent).to.be.greaterThan(baseRent);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/{{propertyUnitId}}/adjusted-rent?effectiveDate={{currentDate}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "{{propertyUnitId}}", "adjusted-rent"],
+							"query": [{"key": "effectiveDate", "value": "{{currentDate}}"}]
+						}
+					}
+				},
+				{
+					"name": "✅ Calculate Outstanding Amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns numeric value', function () {",
+									"    const response = pm.response.text();",
+									"    pm.expect(parseFloat(response)).to.be.a('number');",
+									"    pm.expect(parseFloat(response)).to.be.greaterThanOrEqual(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/{{propertyUnitId}}/outstanding-amount?asOfDate={{currentDate}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "{{propertyUnitId}}", "outstanding-amount"],
+							"query": [{"key": "asOfDate", "value": "{{currentDate}}"}]
+						}
+					}
+				},
+				{
+					"name": "✅ Get Total Paid (RENT)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns positive amount', function () {",
+									"    const totalPaid = parseFloat(pm.response.text());",
+									"    pm.expect(totalPaid).to.be.greaterThan(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/{{propertyUnitId}}/total-paid?paymentType=RENT",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "{{propertyUnitId}}", "total-paid"],
+							"query": [{"key": "paymentType", "value": "RENT"}]
+						}
+					}
+				},
+				{
+					"name": "✅ Get Payment History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns payment history array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Payments are within date range', function () {",
+									"    const jsonData = pm.response.json();",
+									"    const startDate = new Date('2023-08-01');",
+									"    const endDate = new Date('2024-01-31');",
+									"    ",
+									"    jsonData.forEach(payment => {",
+									"        const paymentDate = new Date(payment.paymentDate);",
+									"        pm.expect(paymentDate).to.be.greaterThanOrEqual(startDate);",
+									"        pm.expect(paymentDate).to.be.lessThanOrEqual(endDate);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/property-unit/{{propertyUnitId}}/history?startDate=2023-08-01&endDate=2024-01-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "payments", "property-unit", "{{propertyUnitId}}", "history"],
+							"query": [
+								{"key": "startDate", "value": "2023-08-01"},
+								{"key": "endDate", "value": "2024-01-31"}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔍 Search & Filter Tests",
+			"item": [
+				{
+					"name": "✅ Search Properties by Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns matching properties', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    ",
+									"    jsonData.forEach(property => {",
+									"        pm.expect(property.address.toLowerCase()).to.include('oak');",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/property-units/search?address=Oak",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "property-units", "search"],
+							"query": [{"key": "address", "value": "Oak"}]
+						}
+					}
+				},
+				{
+					"name": "✅ Search with No Results",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns empty array', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    pm.expect(jsonData).to.have.lengthOf(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/property-units/search?address=NonExistentAddress",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "property-units", "search"],
+							"query": [{"key": "address", "value": "NonExistentAddress"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "❌ Error Handling Tests",
+			"item": [
+				{
+					"name": "❌ Create Property Unit - Invalid Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"\",\n  \"type\": \"\",\n  \"baseRentAmount\": -100,\n  \"leaseStartDate\": \"2025-12-31\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/property-units", "host": ["{{baseUrl}}"], "path": ["api", "property-units"]}
+					}
+				},
+				{
+					"name": "❌ Create Payment - Invalid Property Unit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 404', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"propertyUnit\": {\"id\": 999},\n  \"amount\": 1000.00,\n  \"paymentDate\": \"2024-07-01\",\n  \"paymentType\": \"RENT\",\n  \"status\": \"PAID\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/payments", "host": ["{{baseUrl}}"], "path": ["api", "payments"]}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set dynamic current date",
+					"pm.environment.set('currentDate', new Date().toISOString().split('T')[0]);"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

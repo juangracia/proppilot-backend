@@ -28,6 +28,16 @@ public class PropertyUnitController {
         @ApiResponse(responseCode = "201", description = "Property unit created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Property unit data",
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            mediaType = "application/json",
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                name = "New Apartment",
+                value = "{\"address\": \"555 New Development St, Apt 4C\", \"type\": \"Apartment\", \"baseRentAmount\": 1900.00, \"leaseStartDate\": \"2024-03-01\"}"
+            )
+        )
+    )
     public ResponseEntity<PropertyUnit> createPropertyUnit(@Valid @RequestBody PropertyUnit propertyUnit) {
         PropertyUnit createdPropertyUnit = propertyUnitService.createPropertyUnit(propertyUnit);
         return new ResponseEntity<>(createdPropertyUnit, HttpStatus.CREATED);
